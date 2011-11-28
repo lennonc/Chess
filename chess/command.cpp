@@ -51,8 +51,10 @@ void readCommands(){
 
 BOOLTYPE doCommand(const char *buf){
   
-  //  return when command buffer is empty
+  char userinput[80];
+  int number;
   
+  //  return when command buffer is empty
   if (!strcmp(buf, "")){
     CMD_BUFF_COUNT = '\0';
     return true;    
@@ -132,6 +134,15 @@ BOOLTYPE doCommand(const char *buf){
     return true;
   }
   
+  //readfen filename n: reads #-th position from filename
+  if (!strncmp(buf, "readfen", 7)){
+    sscanf(buf+7,"%s %d", userinput, &number);
+    board.init();
+    readFen(userinput, number);
+    board.display();
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
   //  white: white to move
   if (!strcmp(buf, "white")){
     board.nextMove = WHITE_MOVE;
