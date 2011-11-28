@@ -11,6 +11,7 @@
 
 #include "defines.h"
 #include "board.h"
+#include "hash.h"
 
 char CMD_BUFF[MAX_CMD_BUFF];
 int CMD_BUFF_COUNT = 0;
@@ -92,6 +93,8 @@ extern const unsigned char BLACK_QUEEN = 15;         //  1111
 
 const char* PIECENAMES[16] = {"  ","P ","K ","N ","  ","B ","R ","Q ",
                               "  ","P*","K*","N*","  ","B*","R*","Q*"};
+const char* PIECECHARS[16] = {" "," ","K","N"," ","B","R","Q"," "," ","K","N"," ","B","R","Q"};
+
 
 BitMap BITSET[64];
 int BOARDINDEX[9][9]; // index 0 is not used, only 1..8.
@@ -215,5 +218,181 @@ int IPROM;
 int ICASTLOO;
 int ICASTLOOO;
 int ICHECK;
+
+// Evaluation scores start here, all scores are in centipawns.
+// If there are scoring data that is supposed to be symmetrical (i.e. same for BLACK & WHITE),
+// then only the data for WHITE is supplied, and data for BLACK is calculated in dataInit().
+// This is done to make data entry easier, eliminate typos and guarantuee symmetry.
+//
+// MIRRORED:
+// Some scoring arrays are supplied MIRRORED, i.e. starting with the last rank (see the comments below).
+// They are mirrored back in the right order in dataInit().
+// This is only done to make data entry easier, because you can enter the scoring data as if you're
+// looking at the chess board from White's point of perspective.
+
+int PENALTY_DOUBLED_PAWN          = 10;
+int PENALTY_ISOLATED_PAWN         = 20;
+int PENALTY_BACKWARD_PAWN         =  8;
+int BONUS_PASSED_PAWN             = 20;
+int BONUS_BISHOP_PAIR             = 10;
+int BONUS_ROOK_BEHIND_PASSED_PAWN = 20;
+int BONUS_ROOK_ON_OPEN_FILE       = 20;
+int BONUS_TWO_ROOKS_ON_OPEN_FILE  = 20;
+
+int BONUS_PAWN_SHIELD_STRONG = 9;
+int BONUS_PAWN_SHIELD_WEAK = 4;
+
+int PAWN_OWN_DISTANCE[8] =           { 0,   8,  4,  2,  0,  0,  0,  0 };
+int PAWN_OPPONENT_DISTANCE[8] =      { 0,   2,  1,  0,  0,  0,  0,  0 };
+int KNIGHT_DISTANCE[8] =             { 0,   4,  4,  0,  0,  0,  0,  0 };
+int BISHOP_DISTANCE[8] =             { 0,   5,  4,  3,  2,  1,  0,  0 };
+int ROOK_DISTANCE[8] =               { 0,   7,  5,  4,  3,  0,  0,  0 };
+int QUEEN_DISTANCE[8] =              { 0,  10,  8,  5,  4,  0,  0,  0 };
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int PAWNPOS_W[64] = {
+  0,   0,   0,   0,   0,   0,   0,   0,
+  5,  10,  15,  20,  20,  15,  10,   5,
+  4,   8,  12,  16,  16,  12,   8,   4,
+  3,   6,   9,  12,  12,   9,   6,   3,
+  2,   4,   6,   8,   8,   6,   4,   2,
+  1,   2,   3, -10, -10,   3,   2,   1,
+  0,   0,   0, -40, -40,   0,   0,   0,
+  0,   0,   0,   0,   0,   0,   0,   0
+};
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int KNIGHTPOS_W[64] = {
+  -10, -10, -10, -10, -10, -10, -10, -10,
+  -10,   0,   0,   0,   0,   0,   0, -10,
+  -10,   0,   5,   5,   5,   5,   0, -10,
+  -10,   0,   5,  10,  10,   5,   0, -10,
+  -10,   0,   5,  10,  10,   5,   0, -10,
+  -10,   0,   5,   5,   5,   5,   0, -10,
+  -10,   0,   0,   0,   0,   0,   0, -10,
+  -10, -30, -10, -10, -10, -10, -30, -10
+};
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int BISHOPPOS_W[64] = {
+  -10, -10, -10, -10, -10, -10, -10, -10,
+  -10,   0,   0,   0,   0,   0,   0, -10,
+  -10,   0,   5,   5,   5,   5,   0, -10,
+  -10,   0,   5,  10,  10,   5,   0, -10,
+  -10,   0,   5,  10,  10,   5,   0, -10,
+  -10,   0,   5,   5,   5,   5,   0, -10,
+  -10,   0,   0,   0,   0,   0,   0, -10,
+  -10, -10, -20, -10, -10, -20, -10, -10
+};
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int ROOKPOS_W[64] = {
+  0,  0,  0,  0,   0,  0,  0,   0,
+  15, 15, 15, 15,  15, 15, 15,  15,
+  0,  0,  0,  0,   0,  0,  0,   0,
+  0,  0,  0,  0,   0,  0,  0,   0,
+  0,  0,  0,  0,   0,  0,  0,   0,
+  0,  0,  0,  0,   0,  0,  0,   0,
+  0,  0,  0,  0,   0,  0,  0,   0,
+  -10,  0,  0, 10,  10,  0,  0, -10
+};
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int QUEENPOS_W[64] = {
+  -10, -10, -10, -10, -10, -10, -10, -10,
+  -10,   0,   0,   0,   0,   0,   0, -10,
+  -10,   0,   5,   5,   5,   5,   0, -10,
+  -10,   0,   5,  10,  10,   5,   0, -10,
+  -10,   0,   5,  10,  10,   5,   0, -10,
+  -10,   0,   5,   5,   5,   5,   0, -10,
+  -10,   0,   0,   0,   0,   0,   0, -10,
+  -10, -10, -20, -10, -10, -20, -10, -10
+};
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int KINGPOS_W[64]  = {
+  -40, -40, -40, -40, -40, -40, -40, -40,
+  -40, -40, -40, -40, -40, -40, -40, -40,
+  -40, -40, -40, -40, -40, -40, -40, -40,
+  -40, -40, -40, -40, -40, -40, -40, -40,
+  -40, -40, -40, -40, -40, -40, -40, -40,
+  -40, -40, -40, -40, -40, -40, -40, -40,
+  -20, -20, -20, -20, -20, -20, -20, -20,
+  0,  20,  40, -20,   0, -20,  40,  20
+};
+
+// *** This array is MIRRORED                          ***
+// *** You can enter the scoring data as if you're     ***
+// *** looking at the chess board from white's point   ***
+// *** of perspective. Lower left corner is square a1: ***
+int KINGPOS_ENDGAME_W[64] = {
+  0,  10,  20,  30,  30,  20,  10,   0,
+  10,  20,  30,  40,  40,  30,  20,  10,
+  20,  30,  40,  50,  50,  40,  30,  20,
+  30,  40,  50,  60,  60,  50,  40,  30,
+  30,  40,  50,  60,  60,  50,  40,  30,
+  20,  30,  40,  50,  50,  40,  30,  20,
+  10,  20,  30,  40,  40,  30,  20,  10,
+  0,  10,  20,  30,  30,  20,  10,   0
+};
+
+int MIRROR[64] = {
+  56,  57,  58,  59,  60,  61,  62,  63,
+  48,  49,  50,  51,  52,  53,  54,  55,
+  40,  41,  42,  43,  44,  45,  46,  47,
+  32,  33,  34,  35,  36,  37,  38,  39,
+  24,  25,  26,  27,  28,  29,  30,  31,
+  16,  17,  18,  19,  20,  21,  22,  23,
+  8,   9,  10,  11,  12,  13,  14,  15,  
+  0,   1,   2,   3,   4,   5,   6,   7
+};
+
+int DISTANCE[64][64];
+int PAWNPOS_B[64];
+int KNIGHTPOS_B[64];
+int BISHOPPOS_B[64];
+int ROOKPOS_B[64];
+int QUEENPOS_B[64];
+int KINGPOS_B[64];
+int KINGPOS_ENDGAME_B[64];
+BitMap PASSED_WHITE[64];
+BitMap PASSED_BLACK[64];
+BitMap ISOLATED_WHITE[64];
+BitMap ISOLATED_BLACK[64];
+BitMap BACKWARD_WHITE[64];
+BitMap BACKWARD_BLACK[64];
+BitMap KINGSHIELD_STRONG_W[64];
+BitMap KINGSHIELD_STRONG_B[64];
+BitMap KINGSHIELD_WEAK_W[64];
+BitMap KINGSHIELD_WEAK_B[64];
+BitMap WHITE_SQUARES;
+BitMap BLACK_SQUARES;
+
+// Search parameters start here:
+int LARGE_NUMBER = KING_VALUE;
+int CHECKMATESCORE = KING_VALUE;
+int STALEMATESCORE = 0;
+int DRAWSCORE = 0;
+Move NOMOVE;
+HashKeys KEY;
+
 
 #endif

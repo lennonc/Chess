@@ -14,6 +14,7 @@
 unsigned int  bitCnt(BitMap);
 void          dataInit();
 void          displayBitmap(BitMap);
+void          displayPV();
 void          displayMove(Move &);
 BOOLTYPE      doCommand(const char *);
 unsigned int  firstOne(BitMap);
@@ -31,6 +32,7 @@ int           movegen(int);
 U64           perft(int, int);
 void          readCommands();
 BOOLTYPE      readFen(char *, int);
+BOOLTYPE      toSan(Move &, char *);
 void          setup();
 void          setupFen(char *, char *, char *, char *, int , int );
 void          unmakeBlackPromotion(unsigned int, unsigned int &);

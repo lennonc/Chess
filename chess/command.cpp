@@ -15,7 +15,13 @@
 #include "extglobals.h"
 #include "board.h"
 #include "timer.h"
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
 using namespace std;
+
+int kbhit(void);
 
 void readCommands(){
   int nextc;
@@ -52,13 +58,14 @@ void readCommands(){
 
 BOOLTYPE doCommand(const char *buf){
   
-  Move move;
+  Move move, dummy;
+  char sanMove[12];
   Timer timer;
   U64 msStart;
   U64 msStop;
   U64 perftcount;
   char userinput[80];
-  int i, number;
+  int i, j, number;
   
   //  return when command buffer is empty
   if (!strcmp(buf, "")){
@@ -68,39 +75,67 @@ BOOLTYPE doCommand(const char *buf){
   
   //  help, h, or ?: show this help
   if ((!strcmp(buf, "help")) || (!strcmp(buf, "h")) || (!strcmp(buf, "?"))){
-    cout << endl << "help:" << endl;
-    cout << "black               : BLACK to move" << endl;
-    cout << "cc                  : play computer-to-computer " << endl;
-    cout << "d                   : display board " << endl;
-    cout << "exit                : exit program " << endl;
-    cout << "eval                : show static evaluation of this position" << endl;
-    cout << "game                : show game moves " << endl;
-    cout << "go                  : computer next move " << endl;
-    cout << "help, h, or ?       : show this help " << endl;
-    cout << "info                : display variables (for testing purposes)" << endl;
-    cout << "move e2e4, or h7h8q : enter a move (use this format)" << endl;
-    cout << "moves               : show all legal moves" << endl;
-    cout << "new                 : start new game" << endl;
-    cout << "perf                : benchmark a number of key functions" << endl;
-    cout << "perft n             : calculate raw number of nodes from here, depth n " << endl;
-    cout << "quit                : exit program " << endl;
-    cout << "r                   : rotate board " << endl;
-    cout << "readfen filename n  : reads #-th FEN position from filename" << endl;
-    cout << "sd n                : set the search depth to n" << endl;
-    cout << "setup               : setup board... " << endl;
-    cout << "undo                : take back last move" << endl;
-    cout << "white               : WHITE to move" << endl;
-    cout << endl;
+    std::cout << std::endl << "help:" << std::endl;
+    std::cout << "black               : BLACK to move" << std::endl;
+    std::cout << "cc                  : play computer-to-computer " << std::endl;
+    std::cout << "d                   : display board " << std::endl;
+    std::cout << "exit                : exit program " << std::endl;
+    std::cout << "eval                : show static evaluation of this position" << std::endl;
+    std::cout << "game                : show game moves " << std::endl;
+    std::cout << "go                  : computer next move " << std::endl;
+    std::cout << "help, h, or ?       : show this help " << std::endl;
+    std::cout << "info                : display variables (for testing purposes)" << std::endl;
+    std::cout << "move e2e4, or h7h8q : enter a move (use this format)" << std::endl;
+    std::cout << "moves               : show all legal moves" << std::endl;
+    std::cout << "new                 : start new game" << std::endl;
+    std::cout << "perf                : benchmark a number of key functions" << std::endl;
+    std::cout << "perft n             : calculate raw number of nodes from here, depth n " << std::endl;
+    std::cout << "quit                : exit program " << std::endl;
+    std::cout << "r                   : rotate board " << std::endl;
+    std::cout << "readfen filename n  : reads #-th FEN position from filename" << std::endl;
+    std::cout << "sd n                : set the search depth to n" << std::endl;
+    std::cout << "setup               : setup board... " << std::endl;
+    std::cout << "time s              : time per move in seconds" << std::endl;
+    std::cout << "undo                : take back last move" << std::endl;
+    std::cout << "white               : WHITE to move" << std::endl;
+    std::cout << std::endl;
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }  
+  //  black: black to move
+  if (!strcmp(buf, "black")){
+    if (board.nextMove == WHITE_MOVE){
+      board.hashkey ^= KEY.side;
+      board.endOfSearch = 0;
+      board.endOfGame = 0;
+    }
+    board.nextMove = BLACK_MOVE;
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }    
+  
+  // cc: play computer-to-computer
+  if (!kbhit() && !strcmp(buf, "cc")){
+    while (!board.isEndOfgame(i, dummy))
+    {
+      move = board.think();
+      if (move.moveInt)
+      {
+        makeMove(move);
+        board.endOfGame++;
+        board.endOfSearch = board.endOfGame;
+        board.display();
+      }
+      else
+      {
+        CMD_BUFF_COUNT = '\0';
+        return true;
+      }
+    }
     CMD_BUFF_COUNT = '\0';
     return true;
   }
   
-  //  black: black to move
-  if (!strcmp(buf, "black")){
-    board.nextMove = BLACK_MOVE;
-    CMD_BUFF_COUNT = '\0';
-    return true;
-  }     
   
   //  d: display board
   if (!strcmp(buf, "d")){
@@ -108,6 +143,22 @@ BOOLTYPE doCommand(const char *buf){
     CMD_BUFF_COUNT = '\0';
     return true;
   }     
+  //eval : do a static evaluation of the board
+  if (!strcmp(buf, "eval")){
+    number = board.eval();
+    std::cout << "eval score = " << number << std::endl;
+#ifdef WINGLET_DEBUG_EVAL
+    board.mirror();
+    board.display();
+    i = board.eval();
+    std::cout << "eval score = " << i << std::endl;
+    board.mirror();
+    if (number != i) std::cout << "evaluation is not symmetrical! " << number << std::endl;
+    else std::cout << "evaluation is symmetrical" << std::endl;
+#endif
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
   
   //  exit or quit: exit program
   if ((!strcmp(buf, "exit")) || (!strcmp(buf, "quit"))){
@@ -118,20 +169,67 @@ BOOLTYPE doCommand(const char *buf){
   //game: show game moves
   if (!strcmp(buf, "game")){
     if (board.endOfGame){
-      for (i = 0 ; i < board.endOfGame ; i++){
-        cout << i+1 << ". ";
-        displayMove(board.gameLine[i].move);
-        cout <<endl;
+      // make a temporary copy of board.gameLine[];
+      number = board.endOfGame;
+      GameLineRecord *tmp = new GameLineRecord[number];
+      memcpy(tmp, board.gameLine, number * sizeof(GameLineRecord));
+      
+      // unmake all moves:
+      for (i = number-1 ; i >= 0 ; i--){
+        unmakeMove(tmp[i].move);
+        board.endOfSearch = --board.endOfGame;
       }
-    }
-    else
-    {
-      std::cout << "there are no game moves" << std::endl;        
+      
+      // redo all moves:
+      j = board.nextMove;
+      for (i = 0 ; i < number; i++)
+      {
+        // move numbering:
+        if (!((i+j+2)%2)) std::cout << (i+2*j+2)/2 << ". ";
+        else if (!i) std::cout << "1. ... ";
+        
+        // construct the move string
+        toSan(tmp[i].move, sanMove);
+        std::cout << sanMove;
+        
+        // output CRLF, or space:
+        if (!((i+j+1)%2)) std::cout << std::endl;
+        else std::cout << " ";
+        
+        // make the move:
+        makeMove(tmp[i].move);
+        board.endOfSearch = ++board.endOfGame;
+      }
+      std::cout << std::endl;
+      
+      // delete the temporary copy:
+      delete[] tmp;
+    }else{
+      std::cout << "there are no game moves" << std::endl;       
     }
     CMD_BUFF_COUNT = '\0';
     return true;
-  }
+  }  
   
+  //go: computer next move
+  if (!strcmp(buf, "go")){
+    if (!board.isEndOfgame(i, dummy)){
+      move = board.think();
+      if (move.moveInt){
+        makeMove(move);
+        board.endOfGame++;
+        board.endOfSearch = board.endOfGame;
+      }
+      board.display();
+      board.isEndOfgame(i, dummy);
+      CMD_BUFF_COUNT = '\0';
+      return true;
+    }else{
+      board.display();
+      CMD_BUFF_COUNT = '\0';
+      return true;
+    }
+  }  
   //  info: display variables (for testing purposes)
   if (!strcmp(buf, "info")){
     info();
@@ -144,21 +242,20 @@ BOOLTYPE doCommand(const char *buf){
     board.moveBufLen[0] = 0;
     board.moveBufLen[1] = movegen(board.moveBufLen[0]);
     std::cout << std::endl << "moves from this position:" << std::endl;
+    number = 0;
     for (i = board.moveBufLen[0]; i < board.moveBufLen[1]; i++){
       makeMove(board.moveBuffer[i]);
-      if (isOtherKingAttacked())             {
+      if (isOtherKingAttacked()){
         unmakeMove(board.moveBuffer[i]);
       }else{
-        cout << i+1 << ". " ;
-        displayMove(board.moveBuffer[i]);       
-        cout << endl;
         unmakeMove(board.moveBuffer[i]);
+        toSan(board.moveBuffer[i], sanMove);
+        std::cout << ++number << ". " << sanMove << std::endl;
       }
     }
     CMD_BUFF_COUNT = '\0';
     return true;
   }  
-  
   //move: do a move [console mode only]
   if (!strncmp(buf, "move", 4)){
     sscanf(buf+4,"%s",userinput);
@@ -252,6 +349,14 @@ BOOLTYPE doCommand(const char *buf){
     return true;
   }
   
+  //  sd n: set the search depth to n
+  if (!strncmp(buf, "sd", 2)){
+    sscanf(buf+2,"%d", &board.searchDepth);
+    std::cout << "winglet> search depth " << board.searchDepth << std::endl;
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
+  
   //setup: setup board
   if (!strncmp(buf, "setup", 5)){
     setup();
@@ -261,10 +366,15 @@ BOOLTYPE doCommand(const char *buf){
   
   //  white: white to move
   if (!strcmp(buf, "white")){
+    if (board.nextMove == BLACK_MOVE){
+      board.hashkey ^= KEY.side;
+      board.endOfSearch = 0;
+      board.endOfGame = 0;
+    }
     board.nextMove = WHITE_MOVE;
     CMD_BUFF_COUNT = '\0';
     return true;
-  }     
+  }    
   
   //  undo: take back last move
   if (!strcmp(buf, "undo")){
@@ -283,4 +393,30 @@ BOOLTYPE doCommand(const char *buf){
   cout << "    command not implemented: " << buf << ", type 'help' for more info" << endl;
   CMD_BUFF_COUNT = '\0';
   return true;
+}
+
+int kbhit(void){
+  struct termios oldt, newt;
+  int ch;
+  int oldf;
+  
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+  
+  ch = getchar();
+  
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  fcntl(STDIN_FILENO, F_SETFL, oldf);
+  
+  if(ch != EOF)
+  {
+    ungetc(ch, stdin);
+    return 1;
+  }
+  
+  return 0;
 }

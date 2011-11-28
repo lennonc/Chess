@@ -14,6 +14,18 @@
 int main(int argc, char *argv[])
 {
   std::cout << WINGLET_PROG_VERSION << std::endl;
+#ifdef WINGLET_DEBUG_PERFT
+  std::cout << "WINGLET_DEBUG_PERFT defined" << std::endl;
+#endif
+#ifdef WINGLET_DEBUG_MOVES
+  std::cout << "WINGLET_DEBUG_MOVES defined" << std::endl;
+#endif
+#ifdef WINGLET_VERBOSE_EVAL
+  std::cout << "WINGLET_VERBOSE_EVAL defined" << std::endl;
+#endif
+#ifdef WINGLET_DEBUG_EVAL
+  std::cout << "WINGLET_DEBUG_EVAL defined" << std::endl;
+#endif
   dataInit();
   readCommands();
   return 0;

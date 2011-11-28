@@ -468,6 +468,149 @@ void dataInit(){
   move.setTosq(C8);
   BLACK_OOO_CASTL = move.moveInt;
   
+  //     ===========================================================================
+  //     Initialize evaluation data & bitmaps
+  //     ===========================================================================
+  
+  BLACK_SQUARES = 0;
+  for (i = 0; i < 64; i++)
+  {
+    if ((i + RANKS[i]) % 2) BLACK_SQUARES ^= BITSET[i];
+  }
+  WHITE_SQUARES = ~BLACK_SQUARES;
+  
+  // Clear bitmaps:
+  for (i = 0; i < 64; i++)
+  {
+    PASSED_WHITE[i] = 0;
+    PASSED_BLACK[i] = 0;
+    ISOLATED_WHITE[i] = 0;
+    ISOLATED_BLACK[i] = 0;
+    BACKWARD_WHITE[i] = 0;
+    BACKWARD_BLACK[i] = 0;
+    KINGSHIELD_STRONG_W[i] = 0;
+    KINGSHIELD_STRONG_B[i] = 0;
+    KINGSHIELD_WEAK_W[i] = 0;
+    KINGSHIELD_WEAK_B[i] = 0;
+  }
+  
+  for (i = 0; i < 64; i++)
+  {
+    //  PASSED_WHITE:
+    for (rank = RANKS[i] + 1; rank < 8; rank++)
+    {
+      // 3 files:
+      if (FILES[i] - 1 > 0) PASSED_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i] - 1][rank]];
+      PASSED_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i]][rank]];
+      if (FILES[i] + 1 < 9 ) PASSED_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i] + 1][rank]];
+    }
+    
+    // ISOLATED_WHITE:
+    for (rank = 2; rank < 8; rank++)
+    {
+      // 2 files:
+      if (FILES[i] - 1 > 0) ISOLATED_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i] - 1][rank]];
+      if (FILES[i] + 1 < 9 ) ISOLATED_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i] + 1][rank]];
+    }
+    
+    //  BACKWARD_WHITE:
+    for (rank = 2; rank <= RANKS[i]; rank++)
+    {
+      // 2 files:
+      if (FILES[i] - 1 > 0) BACKWARD_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i] - 1][rank]];
+      if (FILES[i] + 1 < 9 ) BACKWARD_WHITE[i] ^= BITSET[BOARDINDEX[FILES[i] + 1][rank]];
+    }
+  }
+  
+  // Pawn shield bitmaps for king safety, only if the king is on the first 3 ranks:
+  for (i = 0; i < 24; i++)
+  {
+    //  KINGSHIELD_STRONG_W & KINGSHIELD_WEAK_W:
+    KINGSHIELD_STRONG_W[i] ^= BITSET[i + 8];
+    KINGSHIELD_WEAK_W[i] ^= BITSET[i + 16];
+    if (FILES[i] > 1)
+    {
+      KINGSHIELD_STRONG_W[i] ^= BITSET[i + 7];
+      KINGSHIELD_WEAK_W[i] ^= BITSET[i + 15];
+    }
+    if (FILES[i] < 8)
+    {
+      KINGSHIELD_STRONG_W[i] ^= BITSET[i + 9];
+      KINGSHIELD_WEAK_W[i] ^= BITSET[i + 17];
+    }
+    if (FILES[i]== 1)
+    {
+      KINGSHIELD_STRONG_W[i] ^= BITSET[i + 10];
+      KINGSHIELD_WEAK_W[i] ^= BITSET[i + 18];
+    }
+    if (FILES[i]== 8)
+    {
+      KINGSHIELD_STRONG_W[i] ^= BITSET[i + 6];
+      KINGSHIELD_WEAK_W[i] ^= BITSET[i + 14];
+    }
+  }
+  
+  //     ===========================================================================
+  //     DISTANCE array, distance is measured as max of (rank,file)-difference
+  //     ===========================================================================
+  for (i = 0 ; i < 64; i++)
+  {
+    for (square = 0 ; square < 64; square++)
+    {
+      if (abs(RANKS[i] - RANKS[square]) > abs(FILES[i] - FILES[square]))
+        DISTANCE[i][square] = abs(RANKS[i] - RANKS[square]);
+      else
+        DISTANCE[i][square] = abs(FILES[i] - FILES[square]);
+    }
+  }
+  
+  //     ===========================================================================
+  //     Initialize MIRRORed data:
+  //     ===========================================================================
+  // Data is supplied as mirrored for WHITE, so it's ready for BLACK to use:
+  for (square = 0; square < 64; square++)
+  {
+    PAWNPOS_B[square] = PAWNPOS_W[square];
+    KNIGHTPOS_B[square] = KNIGHTPOS_W[square];
+    BISHOPPOS_B[square] = BISHOPPOS_W[square];
+    ROOKPOS_B[square] = ROOKPOS_W[square];
+    QUEENPOS_B[square] = QUEENPOS_W[square];
+    KINGPOS_B[square] = KINGPOS_W[square];
+    KINGPOS_ENDGAME_B[square] = KINGPOS_ENDGAME_W[square];
+  }
+  
+  // Complete missing mirrored data:
+  for (i = 0; i < 64; i++)
+  {
+    PAWNPOS_W[i] = PAWNPOS_B[MIRROR[i]];
+    KNIGHTPOS_W[i] = KNIGHTPOS_B[MIRROR[i]];
+    BISHOPPOS_W[i] = BISHOPPOS_B[MIRROR[i]];
+    ROOKPOS_W[i] = ROOKPOS_B[MIRROR[i]];
+    QUEENPOS_W[i] = QUEENPOS_B[MIRROR[i]];
+    KINGPOS_W[i] = KINGPOS_B[MIRROR[i]];
+    KINGPOS_ENDGAME_W[i] = KINGPOS_ENDGAME_B[MIRROR[i]];
+    
+    for (square = 0; square < 64; square ++)
+    {
+      //  PASSED_BLACK bitmaps (mirror of PASSED_WHITE bitmaps):
+      if (PASSED_WHITE[i] & BITSET[square]) PASSED_BLACK[MIRROR[i]] |= BITSET[MIRROR[square]];
+      
+      //  ISOLATED_BLACK bitmaps (mirror of ISOLATED_WHITE bitmaps):
+      if (ISOLATED_WHITE[i] & BITSET[square]) ISOLATED_BLACK[MIRROR[i]] |= BITSET[MIRROR[square]];
+      
+      //  BACKWARD_BLACK bitmaps (mirror of BACKWARD_WHITE bitmaps):
+      if (BACKWARD_WHITE[i] & BITSET[square]) BACKWARD_BLACK[MIRROR[i]] |= BITSET[MIRROR[square]];
+      
+      //  KINGSHIELD_STRONG_B bitmaps (mirror of KINGSHIELD_STRONG_W bitmaps):
+      if (KINGSHIELD_STRONG_W[i] & BITSET[square]) KINGSHIELD_STRONG_B[MIRROR[i]] |= BITSET[MIRROR[square]];
+      
+      //  KINGSHIELD_WEAK_B bitmaps (mirror of KINGSHIELD_WEAK_W bitmaps):
+      if (KINGSHIELD_WEAK_W[i] & BITSET[square]) KINGSHIELD_WEAK_B[MIRROR[i]] |= BITSET[MIRROR[square]];
+    }
+  }
+  
+  NOMOVE.moveInt = 0;
+  KEY.init();
   return;
 }
 

@@ -32,6 +32,23 @@ U64 perft(int ply, int depth){
   // count this node
   if (depth == 0)
   {
+#ifdef WINGLET_DEBUG_EVAL
+    int before = board.eval();
+    board.mirror();
+    int after = board.eval();
+    board.mirror();
+    if (before != after)
+    {
+      std::cout << "evaluation is not symmetrical! " << before << std::endl;
+      for (int j = 0 ; j < board.endOfSearch ; j++)
+      {
+        std::cout << j+1 << ". ";
+        displayMove(board.gameLine[j].move);
+        std::cout <<std::endl;
+      }
+      board.display();
+    }
+#endif
     return 1;
   }
   

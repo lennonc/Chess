@@ -58,6 +58,43 @@ void Board::init(){
   initFromSquares(square, WHITE_MOVE, 0, CANCASTLEOO + CANCASTLEOOO, CANCASTLEOO + CANCASTLEOOO, 0);
 }
 
+void Board::mirror(){
+  // Mirrors the board position (NOTE: move buffers are not effected!!!).
+  // The intended use is to test symmetry of the evalaution function.
+  // Don't forget to mirror the position back to the original position, after testing the evaluation function.
+  
+  int i, mirroredBoard[64];
+  unsigned char nextMirror;
+  int fiftyMMirror, castleWMirror, castleBMirror, epSqMirror;
+  int kmoveBufLen, kendOfGame, kendOfSearch;
+  
+  nextMirror = !nextMove;
+  fiftyMMirror = fiftyMove;
+  castleWMirror = castleBlack;
+  castleBMirror = castleWhite;
+  if (epSquare){
+    if (epSquare < 24) epSqMirror = epSquare + 24;
+    else epSqMirror = epSquare - 24;
+  }
+  
+  for (i = 0; i < 64; i++){
+    mirroredBoard[i] = square[MIRROR[i]];
+    // swap piece color (4th bit):
+    if (mirroredBoard[i] != EMPTY) mirroredBoard[i] ^= 8;
+  }
+  
+  // keep the move buffer intact:
+  kmoveBufLen = moveBufLen[0];
+  kendOfGame = endOfGame;
+  kendOfSearch = endOfSearch;
+  initFromSquares(mirroredBoard, nextMirror, fiftyMMirror, castleWMirror, castleBMirror, epSqMirror);
+  moveBufLen[0] = kmoveBufLen;
+  endOfGame = kendOfGame;
+  endOfSearch = kendOfSearch;
+  
+  return;
+}
+
 void Board::initFromSquares(int input[64], unsigned char next, int fiftyM, int castleW, int castleB, int epSq){
   // sets up the board variables according to the information found in
   // the input[64] array
@@ -82,22 +119,72 @@ void Board::initFromSquares(int input[64], unsigned char next, int fiftyM, int c
   whitePieces  = 0;
   blackPieces  = 0;
   occupiedSquares = 0;
+  hashkey = 0;
   
   // populate the 12 bitboard:
-  for (i = 0; i < 64; i++){
+  for (i = 0; i < 64; i++)
+  {
     square[i] = input[i];
-    if (square[i] == WHITE_KING)   whiteKing    = whiteKing    | BITSET[i];
-    if (square[i] == WHITE_QUEEN)  whiteQueens  = whiteQueens  | BITSET[i];
-    if (square[i] == WHITE_ROOK)   whiteRooks   = whiteRooks   | BITSET[i];
-    if (square[i] == WHITE_BISHOP) whiteBishops = whiteBishops | BITSET[i];
-    if (square[i] == WHITE_KNIGHT) whiteKnights = whiteKnights | BITSET[i];
-    if (square[i] == WHITE_PAWN)   whitePawns   = whitePawns   | BITSET[i];
-    if (square[i] == BLACK_KING)   blackKing    = blackKing    | BITSET[i];
-    if (square[i] == BLACK_QUEEN)  blackQueens  = blackQueens  | BITSET[i];
-    if (square[i] == BLACK_ROOK)   blackRooks   = blackRooks   | BITSET[i];
-    if (square[i] == BLACK_BISHOP) blackBishops = blackBishops | BITSET[i];
-    if (square[i] == BLACK_KNIGHT) blackKnights = blackKnights | BITSET[i];
-    if (square[i] == BLACK_PAWN)   blackPawns   = blackPawns   | BITSET[i];
+    if (square[i] == WHITE_KING)
+    { 
+      whiteKing    = whiteKing | BITSET[i];
+      hashkey     ^= KEY.keys[i][WHITE_KING]; 
+    }
+    if (square[i] == WHITE_QUEEN)
+    {
+      whiteQueens  = whiteQueens  | BITSET[i];
+      hashkey     ^= KEY.keys[i][WHITE_QUEEN];              
+    }
+    if (square[i] == WHITE_ROOK)
+    {
+      whiteRooks   = whiteRooks   | BITSET[i];
+      hashkey     ^= KEY.keys[i][WHITE_ROOK];               
+    }
+    if (square[i] == WHITE_BISHOP)
+    {
+      whiteBishops = whiteBishops | BITSET[i];
+      hashkey     ^= KEY.keys[i][WHITE_BISHOP];             
+    }
+    if (square[i] == WHITE_KNIGHT)
+    {
+      whiteKnights = whiteKnights | BITSET[i];
+      hashkey     ^= KEY.keys[i][WHITE_KNIGHT];             
+    }
+    if (square[i] == WHITE_PAWN)  
+    {
+      whitePawns   = whitePawns   | BITSET[i];
+      hashkey     ^= KEY.keys[i][WHITE_PAWN];               
+    }
+    if (square[i] == BLACK_KING)  
+    {
+      blackKing    = blackKing    | BITSET[i];
+      hashkey     ^= KEY.keys[i][BLACK_KING];               
+    }
+    if (square[i] == BLACK_QUEEN) 
+    {
+      blackQueens  = blackQueens  | BITSET[i];
+      hashkey     ^= KEY.keys[i][BLACK_QUEEN];              
+    }
+    if (square[i] == BLACK_ROOK)  
+    {
+      blackRooks   = blackRooks   | BITSET[i];
+      hashkey     ^= KEY.keys[i][BLACK_ROOK];               
+    }
+    if (square[i] == BLACK_BISHOP)
+    {
+      blackBishops = blackBishops | BITSET[i];
+      hashkey     ^= KEY.keys[i][BLACK_BISHOP];             
+    }
+    if (square[i] == BLACK_KNIGHT)
+    {
+      blackKnights = blackKnights | BITSET[i];
+      hashkey     ^= KEY.keys[i][BLACK_KNIGHT];             
+    }
+    if (square[i] == BLACK_PAWN)  
+    {
+      blackPawns   = blackPawns   | BITSET[i];
+      hashkey     ^= KEY.keys[i][BLACK_PAWN];               
+    }
   }
   
   whitePieces = whiteKing | whiteQueens | whiteRooks | whiteBishops | whiteKnights | whitePawns;
@@ -105,10 +192,18 @@ void Board::initFromSquares(int input[64], unsigned char next, int fiftyM, int c
   occupiedSquares = whitePieces | blackPieces;
   
   nextMove = next;
+  
   castleWhite = castleW;
   castleBlack = castleB;
   epSquare = epSq;
   fiftyMove = fiftyM;
+  
+  if (castleWhite & CANCASTLEOO)  hashkey ^= KEY.wk;
+  if (castleWhite & CANCASTLEOOO) hashkey ^= KEY.wq;
+  if (castleBlack & CANCASTLEOO)  hashkey ^= KEY.bk;
+  if (castleBlack & CANCASTLEOOO) hashkey ^= KEY.bq;
+  if (nextMove) hashkey ^= KEY.side;
+  if (epSq) hashkey ^= KEY.ep[epSq];
   
   Material    = bitCnt(whitePawns) * PAWN_VALUE +
                       bitCnt(whiteKnights) * KNIGHT_VALUE +

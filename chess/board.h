@@ -12,6 +12,7 @@
 #include "defines.h"
 #include "move.h"
 #include "gameline.h"
+#include "timer.h"
 
 struct Board{
   BitMap whiteKing, whiteQueens, whiteRooks, whiteBishops, whiteKnights, whitePawns;
@@ -23,6 +24,8 @@ struct Board{
   unsigned char castleBlack;     // Black's castle status, CANCASTLEOO = 1, CANCASTLEOOO = 2
   int epSquare;                  // En-passant target square after double pawn move
   int fiftyMove;
+  U64 hashkey;                   // Random 'almost' unique signature for current board position.
+
   
   // additional variables:
   int Material;                  // incrementally updated, total material on board,
@@ -39,7 +42,24 @@ struct Board{
   int endOfSearch;               // index for board.gameLine
   GameLineRecord gameLine[MAX_GAME_LINE];
   
+  // search variables:
+  int triangularLength[MAX_PLY];
+  Move triangularArray[MAX_PLY][MAX_PLY];
+  Timer timer;
+  U64 msStart, msStop;
+  int searchDepth;
+  U64 inodes;
+  
   void init();
+  int eval();
+  Move think();
+  int minimax(int ply, int depth);
+  int alphabeta(int ply, int depth, int alpha, int beta);
+  int alphabetapvs(int ply, int depth, int alpha, int beta);
+  void displaySearchStats(int mode, int depth, int score);
+  int repetitionCount();
+  void mirror();
+  BOOLTYPE isEndOfgame(int &legalmoves, Move &singlemove);
   void initFromSquares(int input[64], unsigned char next, int fiftyM, int castleW, int castleB, int epSq);
   void initFromFen(char fen[], char fencolor[], char fencastling[], char fenenpassant[], int fenhalfmoveclock, int fenfullmovenumber);
   void display();
