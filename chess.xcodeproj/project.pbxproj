@@ -15,6 +15,7 @@
 		C38D51A6148348D300B5E23C /* data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A5148348D300B5E23C /* data.cpp */; };
 		C38D51A81483494D00B5E23C /* board.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A71483494D00B5E23C /* board.cpp */; };
 		C38D51AA14834E9D00B5E23C /* readfen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A914834E9D00B5E23C /* readfen.cpp */; };
+		C38D51AC148351BE00B5E23C /* setup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51AB148351BD00B5E23C /* setup.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +46,7 @@
 		C38D51A5148348D300B5E23C /* data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = data.cpp; sourceTree = "<group>"; };
 		C38D51A71483494D00B5E23C /* board.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = board.cpp; sourceTree = "<group>"; };
 		C38D51A914834E9D00B5E23C /* readfen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = readfen.cpp; sourceTree = "<group>"; };
+		C38D51AB148351BD00B5E23C /* setup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = setup.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				C38D519314831BB700B5E23C /* chess.1 */,
 				C38D519E14831D7D00B5E23C /* command.cpp */,
 				C38D519D14831CCF00B5E23C /* protos.h */,
+				C38D51AB148351BD00B5E23C /* setup.cpp */,
 				C38D519C14831C7900B5E23C /* defines.h */,
 				C38D51A71483494D00B5E23C /* board.cpp */,
 				C38D51A914834E9D00B5E23C /* readfen.cpp */,
@@ -151,6 +154,7 @@
 				C38D51A6148348D300B5E23C /* data.cpp in Sources */,
 				C38D51A81483494D00B5E23C /* board.cpp in Sources */,
 				C38D51AA14834E9D00B5E23C /* readfen.cpp in Sources */,
+				C38D51AC148351BE00B5E23C /* setup.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

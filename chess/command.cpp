@@ -143,6 +143,14 @@ BOOLTYPE doCommand(const char *buf){
     CMD_BUFF_COUNT = '\0';
     return true;
   }
+  
+  //setup: setup board
+  if (!strncmp(buf, "setup", 5)){
+    setup();
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
+  
   //  white: white to move
   if (!strcmp(buf, "white")){
     board.nextMove = WHITE_MOVE;

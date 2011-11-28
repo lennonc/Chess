@@ -18,5 +18,6 @@ void          info();
 unsigned int  lastOne(BitMap);
 void          readCommands();
 BOOLTYPE      readFen(char *, int);
+void          setup();
 void          setupFen(char *, char *, char *, char *, int , int );
 #endif
