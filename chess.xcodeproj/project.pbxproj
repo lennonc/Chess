@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		C38D519214831BB700B5E23C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519114831BB700B5E23C /* main.cpp */; };
 		C38D519414831BB700B5E23C /* chess.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C38D519314831BB700B5E23C /* chess.1 */; };
+		C38D519B14831C3E00B5E23C /* wingletx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519A14831C3E00B5E23C /* wingletx.cpp */; };
+		C38D519F14831D7D00B5E23C /* commands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519E14831D7D00B5E23C /* commands.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +30,12 @@
 		C38D518D14831BB700B5E23C /* chess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chess; sourceTree = BUILT_PRODUCTS_DIR; };
 		C38D519114831BB700B5E23C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C38D519314831BB700B5E23C /* chess.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = chess.1; sourceTree = "<group>"; };
+		C38D519A14831C3E00B5E23C /* wingletx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wingletx.cpp; sourceTree = "<group>"; };
+		C38D519C14831C7900B5E23C /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
+		C38D519D14831CCF00B5E23C /* protos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protos.h; sourceTree = "<group>"; };
+		C38D519E14831D7D00B5E23C /* commands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = commands.cpp; sourceTree = "<group>"; };
+		C38D51A014833F3C00B5E23C /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
+		C38D51A114833F5D00B5E23C /* extglobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extglobals.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +69,13 @@
 			isa = PBXGroup;
 			children = (
 				C38D519114831BB700B5E23C /* main.cpp */,
+				C38D519A14831C3E00B5E23C /* wingletx.cpp */,
 				C38D519314831BB700B5E23C /* chess.1 */,
+				C38D519E14831D7D00B5E23C /* commands.cpp */,
+				C38D519D14831CCF00B5E23C /* protos.h */,
+				C38D519C14831C7900B5E23C /* defines.h */,
+				C38D51A114833F5D00B5E23C /* extglobals.h */,
+				C38D51A014833F3C00B5E23C /* globals.h */,
 			);
 			path = chess;
 			sourceTree = "<group>";
@@ -117,6 +131,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C38D519214831BB700B5E23C /* main.cpp in Sources */,
+				C38D519B14831C3E00B5E23C /* wingletx.cpp in Sources */,
+				C38D519F14831D7D00B5E23C /* commands.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
