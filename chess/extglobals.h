@@ -70,11 +70,50 @@ extern const int CHECK_MATE;
 
 extern int MS1BTABLE[];
 
+extern BitMap WHITE_PAWN_ATTACKS[];
+extern BitMap WHITE_PAWN_MOVES[];
+extern BitMap WHITE_PAWN_DOUBLE_MOVES[];
+extern BitMap BLACK_PAWN_ATTACKS[];
+extern BitMap BLACK_PAWN_MOVES[];
+extern BitMap BLACK_PAWN_DOUBLE_MOVES[];
+extern BitMap KNIGHT_ATTACKS[];
+extern BitMap KING_ATTACKS[];
+extern BitMap RANK_ATTACKS[64][64];
+extern BitMap FILE_ATTACKS[64][64];
+extern BitMap DIAGA8H1_ATTACKS[64][64];
+extern BitMap DIAGA1H8_ATTACKS[64][64];
+
+extern const int RANKSHIFT[];
+extern const BitMap _FILEMAGICS[];
+extern const BitMap _DIAGA8H1MAGICS[];
+extern const BitMap _DIAGA1H8MAGICS[];
+
+extern BitMap RANKMASK[];
+extern BitMap FILEMAGIC[];
+extern BitMap FILEMASK[];
+extern BitMap DIAGA8H1MASK[];
+extern BitMap DIAGA8H1MAGIC[];
+extern BitMap DIAGA1H8MASK[];
+extern BitMap DIAGA1H8MAGIC[];
+
+extern unsigned char GEN_SLIDING_ATTACKS[8][64];
+
 extern unsigned char CANCASTLEOO;
 extern unsigned char CANCASTLEOOO;
+extern BitMap maskEG[];
+extern BitMap maskFG[];
+extern BitMap maskBD[];
+extern BitMap maskCE[];
 extern unsigned int WHITE_OOO_CASTL;
 extern unsigned int BLACK_OOO_CASTL;
 extern unsigned int WHITE_OO_CASTL;
 extern unsigned int BLACK_OO_CASTL;
+
+extern int ICAPT;
+extern int IEP;
+extern int IPROM;
+extern int ICASTLOO;
+extern int ICASTLOOO;
+extern int ICHECK;
 
 #endif

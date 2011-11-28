@@ -17,6 +17,11 @@
 		C38D51AA14834E9D00B5E23C /* readfen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A914834E9D00B5E23C /* readfen.cpp */; };
 		C38D51AC148351BE00B5E23C /* setup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51AB148351BD00B5E23C /* setup.cpp */; };
 		C38D51AF148355EF00B5E23C /* move.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51AE148355EE00B5E23C /* move.cpp */; };
+		C38D51B114835F4200B5E23C /* movegen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51B014835F4200B5E23C /* movegen.cpp */; };
+		C38D51B31483607000B5E23C /* displaymove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51B21483607000B5E23C /* displaymove.cpp */; };
+		C38D51B71483665700B5E23C /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51B61483665700B5E23C /* timer.cpp */; };
+		C38D51B9148367BD00B5E23C /* perft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51B8148367BD00B5E23C /* perft.cpp */; };
+		C38D51BB1483686800B5E23C /* makemove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51BA1483686800B5E23C /* makemove.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +55,13 @@
 		C38D51AB148351BD00B5E23C /* setup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = setup.cpp; sourceTree = "<group>"; };
 		C38D51AD1483554700B5E23C /* move.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = move.h; sourceTree = "<group>"; };
 		C38D51AE148355EE00B5E23C /* move.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = move.cpp; sourceTree = "<group>"; };
+		C38D51B014835F4200B5E23C /* movegen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = movegen.cpp; sourceTree = "<group>"; };
+		C38D51B21483607000B5E23C /* displaymove.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = displaymove.cpp; sourceTree = "<group>"; };
+		C38D51B41483658C00B5E23C /* gameline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gameline.h; sourceTree = "<group>"; };
+		C38D51B51483662800B5E23C /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		C38D51B61483665700B5E23C /* timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timer.cpp; sourceTree = "<group>"; };
+		C38D51B8148367BD00B5E23C /* perft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = perft.cpp; sourceTree = "<group>"; };
+		C38D51BA1483686800B5E23C /* makemove.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = makemove.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,9 +97,11 @@
 				C38D519114831BB700B5E23C /* main.cpp */,
 				C38D51AE148355EE00B5E23C /* move.cpp */,
 				C38D519A14831C3E00B5E23C /* wingletx.cpp */,
+				C38D51B21483607000B5E23C /* displaymove.cpp */,
 				C38D519314831BB700B5E23C /* chess.1 */,
 				C38D519E14831D7D00B5E23C /* command.cpp */,
 				C38D519D14831CCF00B5E23C /* protos.h */,
+				C38D51B41483658C00B5E23C /* gameline.h */,
 				C38D51AB148351BD00B5E23C /* setup.cpp */,
 				C38D519C14831C7900B5E23C /* defines.h */,
 				C38D51A71483494D00B5E23C /* board.cpp */,
@@ -96,8 +110,13 @@
 				C38D51A5148348D300B5E23C /* data.cpp */,
 				C38D51A31483457200B5E23C /* bitops.cpp */,
 				C38D51AD1483554700B5E23C /* move.h */,
+				C38D51B014835F4200B5E23C /* movegen.cpp */,
 				C38D51A014833F3C00B5E23C /* globals.h */,
 				C38D51A21483424C00B5E23C /* board.h */,
+				C38D51B51483662800B5E23C /* timer.h */,
+				C38D51B61483665700B5E23C /* timer.cpp */,
+				C38D51B8148367BD00B5E23C /* perft.cpp */,
+				C38D51BA1483686800B5E23C /* makemove.cpp */,
 			);
 			path = chess;
 			sourceTree = "<group>";
@@ -161,6 +180,11 @@
 				C38D51AA14834E9D00B5E23C /* readfen.cpp in Sources */,
 				C38D51AC148351BE00B5E23C /* setup.cpp in Sources */,
 				C38D51AF148355EF00B5E23C /* move.cpp in Sources */,
+				C38D51B114835F4200B5E23C /* movegen.cpp in Sources */,
+				C38D51B31483607000B5E23C /* displaymove.cpp in Sources */,
+				C38D51B71483665700B5E23C /* timer.cpp in Sources */,
+				C38D51B9148367BD00B5E23C /* perft.cpp in Sources */,
+				C38D51BB1483686800B5E23C /* makemove.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

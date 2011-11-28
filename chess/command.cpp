@@ -14,6 +14,7 @@
 #include "protos.h"
 #include "extglobals.h"
 #include "board.h"
+#include "timer.h"
 using namespace std;
 
 void readCommands(){
@@ -51,8 +52,13 @@ void readCommands(){
 
 BOOLTYPE doCommand(const char *buf){
   
+  Move move;
+  Timer timer;
+  U64 msStart;
+  U64 msStop;
+  U64 perftcount;
   char userinput[80];
-  int number;
+  int i, number;
   
   //  return when command buffer is empty
   if (!strcmp(buf, "")){
@@ -109,6 +115,23 @@ BOOLTYPE doCommand(const char *buf){
     return false;
   }
   
+  //game: show game moves
+  if (!strcmp(buf, "game")){
+    if (board.endOfGame){
+      for (i = 0 ; i < board.endOfGame ; i++){
+        cout << i+1 << ". ";
+        displayMove(board.gameLine[i].move);
+        cout <<endl;
+      }
+    }
+    else
+    {
+      std::cout << "there are no game moves" << std::endl;        
+    }
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
+  
   //  info: display variables (for testing purposes)
   if (!strcmp(buf, "info")){
     info();
@@ -116,6 +139,53 @@ BOOLTYPE doCommand(const char *buf){
     return true;
   }
   
+  //moves: shows all legal moves
+  if (!strcmp(buf, "moves")){
+    board.moveBufLen[0] = 0;
+    board.moveBufLen[1] = movegen(board.moveBufLen[0]);
+    std::cout << std::endl << "moves from this position:" << std::endl;
+    for (i = board.moveBufLen[0]; i < board.moveBufLen[1]; i++){
+      makeMove(board.moveBuffer[i]);
+      if (isOtherKingAttacked())             {
+        unmakeMove(board.moveBuffer[i]);
+      }else{
+        cout << i+1 << ". " ;
+        displayMove(board.moveBuffer[i]);       
+        cout << endl;
+        unmakeMove(board.moveBuffer[i]);
+      }
+    }
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }  
+  
+  //move: do a move [console mode only]
+  if (!strncmp(buf, "move", 4)){
+    sscanf(buf+4,"%s",userinput);
+    
+    // generate the pseudo-legal move list
+    board.moveBufLen[0] = 0;
+    board.moveBufLen[1] = movegen(board.moveBufLen[0]);
+    
+    if (isValidTextMove(userinput, move))        // check to see if the user move is also found in the pseudo-legal move list
+    {
+      makeMove(move);
+      
+      if (isOtherKingAttacked())              // post-move check to see if we are leaving our king in check
+      {
+        unmakeMove(move);
+        std::cout << "    invalid move, leaving king in check: " << userinput << std::endl;
+      }else{
+        board.endOfGame++;
+        board.endOfSearch = board.endOfGame;
+        board.display();
+      }
+    }else{
+      std::cout << "    move is invalid or not recognized: " << userinput << std::endl;
+    }
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
   
   //  new: start new game
   if (!strcmp(buf, "new")){
@@ -123,6 +193,44 @@ BOOLTYPE doCommand(const char *buf){
     board.init();
     board.display();
     CMD_BUFF_COUNT = '\0';
+    return true;
+  }
+  
+  //  perft n  : calculate raw number of nodes from here, depth n
+  
+  if (!strncmp(buf, "perft", 5))
+  {
+    sscanf(buf+5,"%d", &number);
+    std::cout << "    starting perft " << number << "..." << std::endl;
+    timer.init();
+    board.moveBufLen[0] = 0;
+    
+#ifdef WINGLET_DEBUG_PERFT
+    ICAPT = 0;
+    IEP = 0;
+    IPROM = 0;
+    ICASTLOO = 0;
+    ICASTLOOO = 0;
+    ICHECK = 0;
+#endif
+    
+    msStart = timer.getms();
+    perftcount = perft(0, number);
+    msStop = timer.getms();
+    
+    std::cout << "nodes        = " << perftcount << ", " << msStop - msStart << " ms, ";
+    if ((msStop - msStart) > 0)
+      std::cout << (perftcount/(msStop - msStart)) << " knods/s";
+    std::cout << std::endl;
+    CMD_BUFF_COUNT = '\0';
+    
+#ifdef WINGLET_DEBUG_PERFT
+    std::cout << "captures     = " << ICAPT << std::endl;
+    std::cout << "en-passant   = " << IEP << std::endl;
+    std::cout << "castlings    = " << ICASTLOO + ICASTLOOO << std::endl;
+    std::cout << "promotions   = " << IPROM << std::endl;
+    std::cout << "checks       = " << ICHECK << std::endl;
+#endif
     return true;
   }
   
@@ -157,6 +265,19 @@ BOOLTYPE doCommand(const char *buf){
     CMD_BUFF_COUNT = '\0';
     return true;
   }     
+  
+  //  undo: take back last move
+  if (!strcmp(buf, "undo")){
+    if (board.endOfGame){
+      unmakeMove(board.gameLine[--board.endOfGame].move);
+      board.endOfSearch = board.endOfGame;
+      board.display();
+    }else{
+      std::cout << "already at start of game" << std::endl;
+    }
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
   
   //  unknown command
   cout << "    command not implemented: " << buf << ", type 'help' for more info" << endl;

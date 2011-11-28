@@ -52,6 +52,16 @@ extern const int FILES[64] = {1, 2, 3, 4, 5, 6, 7, 8,
                               1, 2, 3, 4, 5, 6, 7, 8,
                               1, 2, 3, 4, 5, 6, 7, 8};
 
+extern const int RANKS[64] = {1, 1, 1, 1, 1, 1, 1, 1,
+                              2, 2, 2, 2, 2, 2, 2, 2,
+                              3, 3, 3, 3, 3, 3, 3, 3,
+                              4, 4, 4, 4, 4, 4, 4, 4,
+                              5, 5, 5, 5, 5, 5, 5, 5,
+                              6, 6, 6, 6, 6, 6, 6, 6,
+                              7, 7, 7, 7, 7, 7, 7, 7,
+                              8, 8, 8, 8, 8, 8, 8, 8
+                            };
+
 
 // Identifier of next move:
 extern const unsigned char WHITE_MOVE  = 0; 
@@ -98,11 +108,112 @@ extern const int CHECK_MATE = KING_VALUE;
 // used in Eugene Nalimov's bitScanReverse
 int MS1BTABLE[256];
 
+// Attack tables:
+BitMap WHITE_PAWN_ATTACKS[64];
+BitMap WHITE_PAWN_MOVES[64];
+BitMap WHITE_PAWN_DOUBLE_MOVES[64];
+BitMap BLACK_PAWN_ATTACKS[64];
+BitMap BLACK_PAWN_MOVES[64];
+BitMap BLACK_PAWN_DOUBLE_MOVES[64];
+BitMap KNIGHT_ATTACKS[64];
+BitMap KING_ATTACKS[64];
+BitMap RANK_ATTACKS[64][64];      // 32KB
+BitMap FILE_ATTACKS[64][64];      // 32KB
+BitMap DIAGA8H1_ATTACKS[64][64];  // 32KB
+BitMap DIAGA1H8_ATTACKS[64][64];  // 32KB
+
+// Move generator shift for ranks:
+extern const int RANKSHIFT[64] = {
+  1,  1,  1,  1,  1,  1,  1,  1,
+  9,  9,  9,  9,  9,  9,  9,  9,
+  17, 17, 17, 17, 17, 17, 17, 17,  
+  25, 25, 25, 25, 25, 25, 25, 25,
+  33, 33, 33, 33, 33, 33, 33, 33,
+  41, 41, 41, 41, 41, 41, 41, 41,
+  49, 49, 49, 49, 49, 49, 49, 49,
+  57, 57, 57, 57, 57, 57, 57, 57
+};
+
+// Move generator magic multiplication numbers for files:
+extern const BitMap _FILEMAGICS[8] = {
+  0x8040201008040200,
+  0x4020100804020100,
+  0x2010080402010080,
+  0x1008040201008040,
+  0x0804020100804020,
+  0x0402010080402010,
+  0x0201008040201008,
+  0x0100804020100804
+};
+
+// Move generator magic multiplication numbers for diagonals:
+extern const BitMap _DIAGA8H1MAGICS[15] = {
+  0x0,
+  0x0,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0080808080808080,
+  0x0040404040404040,
+  0x0020202020202020,
+  0x0010101010101010,
+  0x0008080808080808,
+  0x0,
+  0x0
+};
+
+// Move generator magic multiplication numbers for diagonals:
+extern const BitMap _DIAGA1H8MAGICS[15] = {
+  0x0,
+  0x0,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x0101010101010100,
+  0x8080808080808000,
+  0x4040404040400000,
+  0x2020202020000000,
+  0x1010101000000000,
+  0x0808080000000000,
+  0x0,
+  0x0
+};
+
+// Move generator 6-bit masking and magic multiplication numbers:
+BitMap RANKMASK[64];
+BitMap FILEMASK[64];
+BitMap FILEMAGIC[64];
+BitMap DIAGA8H1MASK[64];
+BitMap DIAGA8H1MAGIC[64];
+BitMap DIAGA1H8MASK[64];
+BitMap DIAGA1H8MAGIC[64];
+
+// We use one generalized sliding attacks array: [8 squares][64 states]
+// the unsigned char (=8 bits) contains the attacks for a rank, file or diagonal
+unsigned char GEN_SLIDING_ATTACKS[8][64];
+
 // Used for castling:
 unsigned char CANCASTLEOO = 1;
 unsigned char CANCASTLEOOO = 2;
+BitMap maskEG[2];
+BitMap maskFG[2];
+BitMap maskBD[2];
+BitMap maskCE[2];
 unsigned int WHITE_OOO_CASTL;
 unsigned int BLACK_OOO_CASTL;
 unsigned int WHITE_OO_CASTL;
 unsigned int BLACK_OO_CASTL;
+
+int ICAPT;
+int IEP;
+int IPROM;
+int ICASTLOO;
+int ICASTLOOO;
+int ICHECK;
+
 #endif

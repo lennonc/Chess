@@ -12,6 +12,9 @@
 #define WINGLET_PROG_VERSION "winglet 0.0, Copyright (C) 2011, Lennon Chimbumu"
 
 #define MAX_CMD_BUFF 256   // Console command input buffer
+#define MAX_MOV_BUFF 4096    // Number of moves that we can store (all plies)
+#define MAX_PLY      64      // Search depth
+#define MAX_GAME_LINE    1024   // Number of moves in the (game + search) line that we can store
 
 typedef int BOOLTYPE;
 typedef unsigned long long U64;
