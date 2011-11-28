@@ -9,7 +9,13 @@
 #ifndef chess_protos_h
 #define chess_protos_h
 
-BOOLTYPE doCommand(const char *buf);
-void readCommands();
+unsigned int  bitCnt(BitMap);
+void          dataInit();
+void          displayBitmap(BitMap);
+BOOLTYPE      doCommand(const char *);
+unsigned int  firstOne(BitMap);
+void          info();
+unsigned int  lastOne(BitMap);
+void          readCommands();
 
 #endif

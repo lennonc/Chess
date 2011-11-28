@@ -10,7 +10,10 @@
 		C38D519214831BB700B5E23C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519114831BB700B5E23C /* main.cpp */; };
 		C38D519414831BB700B5E23C /* chess.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C38D519314831BB700B5E23C /* chess.1 */; };
 		C38D519B14831C3E00B5E23C /* wingletx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519A14831C3E00B5E23C /* wingletx.cpp */; };
-		C38D519F14831D7D00B5E23C /* commands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519E14831D7D00B5E23C /* commands.cpp */; };
+		C38D519F14831D7D00B5E23C /* command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519E14831D7D00B5E23C /* command.cpp */; };
+		C38D51A41483457200B5E23C /* bitops.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A31483457200B5E23C /* bitops.cpp */; };
+		C38D51A6148348D300B5E23C /* data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A5148348D300B5E23C /* data.cpp */; };
+		C38D51A81483494D00B5E23C /* board.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D51A71483494D00B5E23C /* board.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,9 +36,13 @@
 		C38D519A14831C3E00B5E23C /* wingletx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wingletx.cpp; sourceTree = "<group>"; };
 		C38D519C14831C7900B5E23C /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
 		C38D519D14831CCF00B5E23C /* protos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protos.h; sourceTree = "<group>"; };
-		C38D519E14831D7D00B5E23C /* commands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = commands.cpp; sourceTree = "<group>"; };
+		C38D519E14831D7D00B5E23C /* command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = command.cpp; sourceTree = "<group>"; };
 		C38D51A014833F3C00B5E23C /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		C38D51A114833F5D00B5E23C /* extglobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extglobals.h; sourceTree = "<group>"; };
+		C38D51A21483424C00B5E23C /* board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = board.h; sourceTree = "<group>"; };
+		C38D51A31483457200B5E23C /* bitops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bitops.cpp; sourceTree = "<group>"; };
+		C38D51A5148348D300B5E23C /* data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = data.cpp; sourceTree = "<group>"; };
+		C38D51A71483494D00B5E23C /* board.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = board.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,11 +78,15 @@
 				C38D519114831BB700B5E23C /* main.cpp */,
 				C38D519A14831C3E00B5E23C /* wingletx.cpp */,
 				C38D519314831BB700B5E23C /* chess.1 */,
-				C38D519E14831D7D00B5E23C /* commands.cpp */,
+				C38D519E14831D7D00B5E23C /* command.cpp */,
 				C38D519D14831CCF00B5E23C /* protos.h */,
 				C38D519C14831C7900B5E23C /* defines.h */,
+				C38D51A71483494D00B5E23C /* board.cpp */,
 				C38D51A114833F5D00B5E23C /* extglobals.h */,
+				C38D51A5148348D300B5E23C /* data.cpp */,
+				C38D51A31483457200B5E23C /* bitops.cpp */,
 				C38D51A014833F3C00B5E23C /* globals.h */,
+				C38D51A21483424C00B5E23C /* board.h */,
 			);
 			path = chess;
 			sourceTree = "<group>";
@@ -132,7 +143,10 @@
 			files = (
 				C38D519214831BB700B5E23C /* main.cpp in Sources */,
 				C38D519B14831C3E00B5E23C /* wingletx.cpp in Sources */,
-				C38D519F14831D7D00B5E23C /* commands.cpp in Sources */,
+				C38D519F14831D7D00B5E23C /* command.cpp in Sources */,
+				C38D51A41483457200B5E23C /* bitops.cpp in Sources */,
+				C38D51A6148348D300B5E23C /* data.cpp in Sources */,
+				C38D51A81483494D00B5E23C /* board.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
