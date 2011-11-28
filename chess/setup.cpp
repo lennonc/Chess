@@ -15,6 +15,8 @@
 #include "protos.h"
 #include "extglobals.h"
 
+using namespace std;
+
 void setup(){
   // interactively setup the chess board
   int file, rank;
@@ -38,50 +40,50 @@ void setup(){
   epsq = board.epSquare;
   
   if (board.nextMove == WHITE_MOVE){
-    std::cout << "wt> setup> type 'help' for more info" << std::endl;
+    cout << "wt> setup> type 'help' for more info" << endl;
   }else{
-    std::cout << "bl> setup> type 'help' for more info" << std::endl;
+    cout << "bl> setup> type 'help' for more info" << endl;
   }
   
   for (;;){
     if (board.nextMove == WHITE_MOVE){
-      std::cout << "wt> setup> ";
+      cout << "wt> setup> ";
     }else{
-      std::cout << "bl> setup> ";
+      cout << "bl> setup> ";
     }
-    std::cout.flush();
-    std::cin >> s;
+    cout.flush();
+    cin >> s;
     
     if ((!strcmp(s, "help")) || (!strcmp(s, "h")) || (!strcmp(s, "?"))){
-      std::cout  << std::endl << "setup help:" << std::endl;
-      std::cout << "black               : BLACK to move" << std::endl;
-      std::cout << "castle cccc         : castling rights, using FEN-style. Example: 'castle KQkq'" << std::endl;
-      std::cout << "clear               : clear the board" << std::endl;
-      std::cout << "d                   : display board" << std::endl;
-      std::cout << "epsq cc             : set en-passant target square. Example: 'epsq e3'" << std::endl;
-      std::cout << "exit                : exit setup" << std::endl;
-      std::cout << "fen fenstring       : sets up the board with a FEN-string (6 elements)," << std::endl;
-      std::cout << "                      for instance: n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1" << std::endl;
-      std::cout << "                      you can paste a string into the windows console" << std::endl;
-      std::cout << "                      by using your mouse and right-click paste" << std::endl;
-      std::cout << "fifty n             : n = half moves since last capture or pawn move" << std::endl;
-      std::cout << "new                 : new game" << std::endl;
-      std::cout << "r                   : rotate board" << std::endl;
-      std::cout << "rank n fenrank      : piece placement for rank n (from white's perspective)" << std::endl;
-      std::cout << "                      fenrank defines the contents of each square, from left to" << std::endl;
-      std::cout << "                      right (file a through file h). fenrank uses FEN-style:" << std::endl;
-      std::cout << "                      pieces are identified by a single letter (pawn=P," << std::endl;
-      std::cout << "                      knight=N, etc), using upper-case letters for white pieces" << std::endl;
-      std::cout << "                      and lowercase letters for black pieces." << std::endl;
-      std::cout << "                      Blank squares are noted using digits 1 through 8 (the " << std::endl;
-      std::cout << "                      number of blank squares)." << std::endl;
-      std::cout << "                      Examples: 'rank 1 R1BQKBNR' or 'rank 6 3p2p1'" << std::endl;
-      std::cout << "white               : WHITE to move" << std::endl << std::endl;
+      cout  << endl << "setup help:" << endl;
+      cout << "black               : BLACK to move" << endl;
+      cout << "castle cccc         : castling rights, using FEN-style. Example: 'castle KQkq'" << endl;
+      cout << "clear               : clear the board" << endl;
+      cout << "d                   : display board" << endl;
+      cout << "epsq cc             : set en-passant target square. Example: 'epsq e3'" << endl;
+      cout << "exit                : exit setup" << endl;
+      cout << "fen fenstring       : sets up the board with a FEN-string (6 elements)," << endl;
+      cout << "                      for instance: n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1" << endl;
+      cout << "                      you can paste a string into the windows console" << endl;
+      cout << "                      by using your mouse and right-click paste" << endl;
+      cout << "fifty n             : n = half moves since last capture or pawn move" << endl;
+      cout << "new                 : new game" << endl;
+      cout << "r                   : rotate board" << endl;
+      cout << "rank n fenrank      : piece placement for rank n (from white's perspective)" << endl;
+      cout << "                      fenrank defines the contents of each square, from left to" << endl;
+      cout << "                      right (file a through file h). fenrank uses FEN-style:" << endl;
+      cout << "                      pieces are identified by a single letter (pawn=P," << endl;
+      cout << "                      knight=N, etc), using upper-case letters for white pieces" << endl;
+      cout << "                      and lowercase letters for black pieces." << endl;
+      cout << "                      Blank squares are noted using digits 1 through 8 (the " << endl;
+      cout << "                      number of blank squares)." << endl;
+      cout << "                      Examples: 'rank 1 R1BQKBNR' or 'rank 6 3p2p1'" << endl;
+      cout << "white               : WHITE to move" << endl << endl;
     }else if (!strcmp(s, "black")){
       next = BLACK_MOVE;
       board.initFromSquares(board.square, next, halfmoves, whiteCastle , blackCastle , epsq);
     }else if (!strncmp(s, "castle", 5)){
-      std::cin >> castle;
+      cin >> castle;
       whiteCastle = 0;
       blackCastle = 0;
       if (strstr(castle, "K")) whiteCastle += CANCASTLEOO;
@@ -101,37 +103,37 @@ void setup(){
       board.initFromSquares(board.square, next, halfmoves, whiteCastle , blackCastle , epsq);
     }else if (!strcmp(s, "d")){
       board.display();
-      std::cout << "  castleWhite = " << (int) board.castleWhite << " castleBlack = " << (int) board.castleBlack << " epSquare = "
-      << board.epSquare << " fiftyMove = " << board.fiftyMove << std::endl << std::endl;
+      cout << "  castleWhite = " << (int) board.castleWhite << " castleBlack = " << (int) board.castleBlack << " epSquare = "
+      << board.epSquare << " fiftyMove = " << board.fiftyMove << endl << endl;
     }
     
     else if (!strncmp(s, "epsq", 4)){
-      std::cin >> epsqc;
+      cin >> epsqc;
       epsq = ((int) epsqc[0] - 96) + 8 * ((int) epsqc[1] - 48) - 9;
       board.initFromSquares(board.square, next, halfmoves, whiteCastle , blackCastle , epsq);
     }
     
     else if (!strcmp(s, "exit")){
-      std::cout.flush();
-      std::cin.clear();
+      cout.flush();
+      cin.clear();
       return;
     }else if (!strncmp(s, "fen", 3)){
-      std::cin >> fen;
-      std::cin >> fencolor;
-      std::cin >> fencastling;
-      std::cin >> fenenpassant;
-      std::cin >> fenhalfmoveclock;
-      std::cin >> fenfullmovenumber;
+      cin >> fen;
+      cin >> fencolor;
+      cin >> fencastling;
+      cin >> fenenpassant;
+      cin >> fenhalfmoveclock;
+      cin >> fenfullmovenumber;
       setupFen(fen, fencolor, fencastling, fenenpassant, fenhalfmoveclock, fenfullmovenumber);
     }else if (!strncmp(s, "fifty", 5)){
-      std::cin >> halfmoves;
+      cin >> halfmoves;
       board.initFromSquares(board.square, next, halfmoves, whiteCastle , blackCastle , epsq);
     }else if (!strcmp(s, "new")){
       board.init();
     }else if (!strcmp(s, "rank")){
-      std::cin >> rank;
+      cin >> rank;
       if ((rank > 0) & (rank < 9)){
-        std::cin >> fenrank;
+        cin >> fenrank;
         // clear the file
         for (file = 1; file < 9; file++){
           board.square[BOARDINDEX[file][rank]] = EMPTY;
@@ -223,8 +225,8 @@ void setup(){
       next = BLACK_MOVE;
       board.initFromSquares(board.square, next, halfmoves, whiteCastle , blackCastle , epsq);
     }else{
-      std::cout << "    command not implemented: " << s << ", type 'help' for more info" << std::endl;
-      std::cin.clear();
+      cout << "    command not implemented: " << s << ", type 'help' for more info" << endl;
+      cin.clear();
     }
   }
 }
