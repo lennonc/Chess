@@ -611,6 +611,79 @@ void dataInit(){
   
   NOMOVE.moveInt = 0;
   KEY.init();
+  
+  //     ===========================================================================
+  //     HEADINGS and RAYS, used in SEE:
+  //     ===========================================================================
+  for (i = 0 ; i < 64; i++)
+  {
+    RAY_W[i]  = 0;
+    RAY_NW[i] = 0;
+    RAY_N[i]  = 0;
+    RAY_NE[i] = 0;
+    RAY_E[i]  = 0;
+    RAY_SE[i] = 0;
+    RAY_S[i]  = 0;
+    RAY_SW[i] = 0;
+    for (square = 0 ; square < 64; square ++)
+    {
+      HEADINGS[i][square] = 0;
+    }
+  }
+  
+  for (rank = 1 ; rank < 9; rank++)
+    for (file = 1 ; file < 9; file++)
+    {
+      i = BOARDINDEX[file][rank];             
+      // WEST:
+      for (afile = file - 1 ; afile > 0; afile--)
+      {
+        HEADINGS[i][BOARDINDEX[afile][rank]] = WEST;
+        RAY_W[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[afile][rank]];
+      }
+      // NORTHWEST:
+      for (afile = file - 1, arank = rank + 1 ; (afile > 0) && (arank < 9); afile--,  arank++)
+      {
+        HEADINGS[i][BOARDINDEX[afile][arank]] = NORTHWEST;
+        RAY_NW[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[afile][arank]];
+      }
+      // NORTH:
+      for (arank = rank + 1 ; arank < 9; arank++)
+      {
+        HEADINGS[i][BOARDINDEX[file][arank]] = NORTH;
+        RAY_N[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[file][arank]];
+      }
+      // NORTHEAST:
+      for (afile = file + 1, arank = rank + 1 ; (afile < 9) && (arank < 9); afile++,  arank++)
+      {
+        HEADINGS[i][BOARDINDEX[afile][arank]] = NORTHEAST;
+        RAY_NE[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[afile][arank]];
+      }
+      // EAST:
+      for (afile = file + 1 ; afile < 9; afile++)
+      {
+        HEADINGS[i][BOARDINDEX[afile][rank]] = EAST;
+        RAY_E[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[afile][rank]];
+      }
+      // SOUTHEAST:
+      for (afile = file + 1, arank = rank - 1 ; (afile < 9) && (arank > 0); afile++,  arank--)
+      {
+        HEADINGS[i][BOARDINDEX[afile][arank]] = SOUTHEAST;
+        RAY_SE[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[afile][arank]];
+      }
+      // SOUTH:
+      for (arank = rank - 1 ; arank > 0; arank--)
+      {
+        HEADINGS[i][BOARDINDEX[file][arank]] = SOUTH;
+        RAY_S[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[file][arank]];
+      }
+      // SOUTHWEST:
+      for (afile = file - 1, arank = rank - 1 ; (afile > 0) && (arank > 0); afile--,  arank--)
+      {
+        HEADINGS[i][BOARDINDEX[afile][arank]] = SOUTHWEST;
+        RAY_SW[BOARDINDEX[file][rank]] |= BITSET[BOARDINDEX[afile][arank]];
+      }
+    }
   return;
 }
 

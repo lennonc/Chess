@@ -15,8 +15,12 @@
 #define MAX_MOV_BUFF 4096    // Number of moves that we can store (all plies)
 #define MAX_PLY      64      // Search depth
 #define MAX_GAME_LINE    1024   // Number of moves in the (game + search) line that we can store
+//#define WINGLET_DEBUG_PERFT
+//#define WINGLET_DEBUG_MOVES
 //#define WINGLET_VERBOSE_EVAL
 //#define WINGLET_DEBUG_EVAL
+//#define WINGLET_VERBOSE_SEE
+
 
 typedef int BOOLTYPE;
 typedef unsigned long long U64;

@@ -70,6 +70,8 @@ extern const int ROOK_VALUE;
 extern const int QUEEN_VALUE;
 extern const int KING_VALUE;
 extern const int CHECK_MATE;
+extern int PIECEVALUES[];
+
 
 extern int MS1BTABLE[];
 
@@ -169,6 +171,26 @@ extern int STALEMATESCORE;
 extern int DRAWSCORE;
 extern Move NOMOVE;
 extern HashKeys KEY;
+
+extern int OFFSET;
+extern int MINCAPTVAL;
+extern int WEST;
+extern int NORTHWEST;
+extern int NORTH;
+extern int NORTHEAST;
+extern int EAST;
+extern int SOUTHEAST;
+extern int SOUTH;
+extern int SOUTHWEST;
+extern BitMap RAY_W[];
+extern BitMap RAY_NW[];
+extern BitMap RAY_N[];
+extern BitMap RAY_NE[];
+extern BitMap RAY_E[];
+extern BitMap RAY_SE[];
+extern BitMap RAY_S[];
+extern BitMap RAY_SW[];
+extern int HEADINGS[64][64];
 
 
 #endif

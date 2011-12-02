@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C378704A1484348800CEBF0A /* sortmoves.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C37870491484348800CEBF0A /* sortmoves.cpp */; };
+		C378704D148436EF00CEBF0A /* qsearch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C378704C148436EF00CEBF0A /* qsearch.cpp */; };
+		C378704F1484370C00CEBF0A /* see.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C378704E1484370C00CEBF0A /* see.cpp */; };
 		C38D519214831BB700B5E23C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519114831BB700B5E23C /* main.cpp */; };
 		C38D519414831BB700B5E23C /* chess.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C38D519314831BB700B5E23C /* chess.1 */; };
 		C38D519B14831C3E00B5E23C /* wingletx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C38D519A14831C3E00B5E23C /* wingletx.cpp */; };
@@ -41,11 +44,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C37870491484348800CEBF0A /* sortmoves.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sortmoves.cpp; sourceTree = "<group>"; };
+		C378704C148436EF00CEBF0A /* qsearch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = qsearch.cpp; sourceTree = "<group>"; };
+		C378704E1484370C00CEBF0A /* see.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = see.cpp; sourceTree = "<group>"; };
 		C38D518D14831BB700B5E23C /* chess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = chess; sourceTree = BUILT_PRODUCTS_DIR; };
 		C38D519114831BB700B5E23C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C38D519314831BB700B5E23C /* chess.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = chess.1; sourceTree = "<group>"; };
 		C38D519A14831C3E00B5E23C /* wingletx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wingletx.cpp; sourceTree = "<group>"; };
-		C38D519C14831C7900B5E23C /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
+		C38D519C14831C7900B5E23C /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		C38D519D14831CCF00B5E23C /* protos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protos.h; sourceTree = "<group>"; };
 		C38D519E14831D7D00B5E23C /* command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = command.cpp; sourceTree = "<group>"; };
 		C38D51A014833F3C00B5E23C /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
@@ -107,6 +113,7 @@
 				C38D51A21483424C00B5E23C /* board.h */,
 				C38D519314831BB700B5E23C /* chess.1 */,
 				C38D519E14831D7D00B5E23C /* command.cpp */,
+				C37870491484348800CEBF0A /* sortmoves.cpp */,
 				C38D51A5148348D300B5E23C /* data.cpp */,
 				C38D519C14831C7900B5E23C /* defines.h */,
 				C38D51B21483607000B5E23C /* displaymove.cpp */,
@@ -122,6 +129,8 @@
 				C38D51AE148355EE00B5E23C /* move.cpp */,
 				C38D51AD1483554700B5E23C /* move.h */,
 				C38D51C01483758B00B5E23C /* search.cpp */,
+				C378704C148436EF00CEBF0A /* qsearch.cpp */,
+				C378704E1484370C00CEBF0A /* see.cpp */,
 				C38D51B014835F4200B5E23C /* movegen.cpp */,
 				C38D51B8148367BD00B5E23C /* perft.cpp */,
 				C38D519D14831CCF00B5E23C /* protos.h */,
@@ -201,6 +210,9 @@
 				C38D51BD14836C1600B5E23C /* eval.cpp in Sources */,
 				C38D51C11483758B00B5E23C /* search.cpp in Sources */,
 				C38D51C4148385AC00B5E23C /* hash.cpp in Sources */,
+				C378704A1484348800CEBF0A /* sortmoves.cpp in Sources */,
+				C378704D148436EF00CEBF0A /* qsearch.cpp in Sources */,
+				C378704F1484370C00CEBF0A /* see.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +299,7 @@
 				C38D519914831BB700B5E23C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

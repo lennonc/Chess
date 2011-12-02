@@ -12,6 +12,7 @@
 #include "move.h"
 
 unsigned int  bitCnt(BitMap);
+int           captgen(int index);
 void          dataInit();
 void          displayBitmap(BitMap);
 void          displayPV();

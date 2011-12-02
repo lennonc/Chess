@@ -93,6 +93,9 @@ BOOLTYPE doCommand(const char *buf){
     std::cout << "quit                : exit program " << std::endl;
     std::cout << "r                   : rotate board " << std::endl;
     std::cout << "readfen filename n  : reads #-th FEN position from filename" << std::endl;
+#ifdef WINGLET_VERBOSE_SEE
+    std::cout << "qsearch             : shows sorted capture movelist" << std::endl;
+#endif
     std::cout << "sd n                : set the search depth to n" << std::endl;
     std::cout << "setup               : setup board... " << std::endl;
     std::cout << "time s              : time per move in seconds" << std::endl;
@@ -389,6 +392,35 @@ BOOLTYPE doCommand(const char *buf){
     return true;
   }
   
+#ifdef WINGLET_VERBOSE_SEE
+  // qsearch : shows sorted capture move list
+  if (!strncmp(buf, "qsearch", 3))
+  {
+    board.moveBufLen[0] = 0;
+    board.moveBufLen[1] = captgen(board.moveBufLen[0]);
+    std::cout << std::endl << "sorted capturing moves from this position:" << std::endl;
+    std::cout << std::endl << "        score:" << std::endl;
+    number = 0;
+    for (i = board.moveBufLen[0]; i < board.moveBufLen[1]; i++)
+    {
+      makeMove(board.moveBuffer[i]);
+      if (isOtherKingAttacked())
+      {
+        unmakeMove(board.moveBuffer[i]);
+      }
+      else
+      {
+        unmakeMove(board.moveBuffer[i]);
+        std::cout << ++number << ". ";
+        displayMove(board.moveBuffer[i]);
+        std::cout << "   " << board.moveBuffer[i + OFFSET].moveInt << std::endl;
+      }
+    }
+    CMD_BUFF_COUNT = '\0';
+    return true;
+  }
+#endif
+  
   //  unknown command
   cout << "    command not implemented: " << buf << ", type 'help' for more info" << endl;
   CMD_BUFF_COUNT = '\0';
@@ -412,8 +444,7 @@ int kbhit(void){
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
   fcntl(STDIN_FILENO, F_SETFL, oldf);
   
-  if(ch != EOF)
-  {
+  if(ch != EOF){
     ungetc(ch, stdin);
     return 1;
   }

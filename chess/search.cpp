@@ -1,3 +1,4 @@
+//#include <conio.h>
 #include <stdio.h>
 #include <iostream>
 #include <iomanip>
@@ -9,15 +10,18 @@
 
 Move Board::think()
 {
-  // This is the entry point for search, it is intended to drive iterative deepening ** later **
-  // The search stops if (whatever comes first):
-  // - there is no legal move (checkmate or stalemate)
-  // - there is only one legal move (in this case we don't need to search)
-  // **later** - time is up
-  // - the search is interrupted by the user, or by winboard
-  // - the search depth is reached
   
-  int score, legalmoves;
+  //     ===========================================================================
+  //  This is the entry point for search, it is intended to drive iterative deepening
+  //  The search stops if (whatever comes first):
+  //  - there is no legal move (checkmate or stalemate)
+  //  - there is only one legal move (in this case we don't need to search)
+  //  **later** - time is up
+  //  - the search is interrupted by the user, or by winboard
+  //  - the search depth is reached
+  //     ===========================================================================
+  
+  int score, legalmoves, currentdepth;
   Move singlemove;
   
   //     ===========================================================================
@@ -34,18 +38,33 @@ Move Board::think()
   //     ===========================================================================
   //     There is more than legal 1 move, so prepare to search:
   //     ===========================================================================
-  timer.init();
-  displaySearchStats(1, 0, 0);  // display console header
-  
-  moveBufLen[0] = 0;
+  lastPVLength = 0;
+  memset(lastPV, 0 , sizeof(lastPV));
+  memset(whiteHeuristics, 0, sizeof(whiteHeuristics));
+  memset(blackHeuristics, 0, sizeof(blackHeuristics));
   inodes = 0;
+  // display console header
+  displaySearchStats(1, 0, 0); 
+  timer.init();
   msStart = timer.getms();
-  //     score = minimax(0, searchDepth);
-  //     score = alphabeta(0, searchDepth, -LARGE_NUMBER, LARGE_NUMBER);
-  score = alphabetapvs(0, searchDepth, -LARGE_NUMBER, LARGE_NUMBER);
-  msStop = timer.getms();
-  displaySearchStats(2, searchDepth, score);
-  return (triangularArray[0][0]);
+  
+  //  iterative deepening:
+  for (currentdepth = 1; currentdepth <= searchDepth; currentdepth++)
+  {
+    //  clear the buffers:
+    memset(moveBufLen, 0, sizeof(moveBufLen));
+    memset(moveBuffer, 0, sizeof(moveBuffer));
+    memset(triangularLength, 0, sizeof(triangularLength));
+    memset(triangularArray, 0, sizeof(triangularArray));
+    followpv = true;
+    score = alphabetapvs(0, currentdepth, -LARGE_NUMBER, LARGE_NUMBER);
+    msStop = timer.getms();
+    displaySearchStats(2, currentdepth, score);
+    // stop searching if the current depth leads to a forced mate:
+    if ((score > (CHECKMATESCORE-currentdepth)) || (score < -(CHECKMATESCORE-currentdepth)))
+      currentdepth = searchDepth;
+  }
+  return (lastPV[0]);
 }
 
 int Board::alphabetapvs(int ply, int depth, int alpha, int beta)
@@ -54,7 +73,12 @@ int Board::alphabetapvs(int ply, int depth, int alpha, int beta)
   
   int i, j, movesfound, pvmovesfound, val;
   triangularLength[ply] = ply;
-  if (depth == 0) return board.eval();
+  if (depth == 0)
+  {
+    followpv = false;
+    return qsearch(ply, alpha, beta);
+  }
+  
   // repetition check:
   if (repetitionCount() >= 3) return DRAWSCORE;
   movesfound = 0;
@@ -62,6 +86,7 @@ int Board::alphabetapvs(int ply, int depth, int alpha, int beta)
   moveBufLen[ply+1] = movegen(moveBufLen[ply]);
   for (i = moveBufLen[ply]; i < moveBufLen[ply+1]; i++)
   {
+    selectmove(ply, i, depth, followpv);
     makeMove(moveBuffer[i]);
     {
       if (!isOtherKingAttacked())
@@ -74,13 +99,20 @@ int Board::alphabetapvs(int ply, int depth, int alpha, int beta)
           val = -alphabetapvs(ply+1, depth-1, -alpha-1, -alpha);
           if ((val > alpha) && (val < beta))
           {
-            val = -alphabetapvs(ply+1, depth - 1, -beta, -alpha);   // In case of failure, proceed with normal alphabeta                
+            // in case of failure, proceed with normal alphabeta
+            val = -alphabetapvs(ply+1, depth - 1, -beta, -alpha);                        
           }
         }
-        else val = -alphabetapvs(ply+1, depth-1, -beta, -alpha);          // Normal alphabeta
+        // normal alphabeta
+        else val = -alphabetapvs(ply+1, depth-1, -beta, -alpha);         
         unmakeMove(moveBuffer[i]);
         if (val >= beta)
         {
+          // update the history heuristic
+          if (nextMove)
+            blackHeuristics[moveBuffer[i].getFrom()][moveBuffer[i].getTosq()] += depth*depth;
+          else
+            whiteHeuristics[moveBuffer[i].getFrom()][moveBuffer[i].getTosq()] += depth*depth;
           return beta;
         }
         if (val > alpha)
@@ -104,16 +136,19 @@ int Board::alphabetapvs(int ply, int depth, int alpha, int beta)
     }
   }
   
-  //     ===========================================================================
-  //     50-move rule:
-  //     ===========================================================================
+  // update the history heuristic
+  if (pvmovesfound)
+  {
+    if (nextMove)
+      blackHeuristics[triangularArray[ply][ply].getFrom()][triangularArray[ply][ply].getTosq()] += depth*depth;
+    else
+      whiteHeuristics[triangularArray[ply][ply].getFrom()][triangularArray[ply][ply].getTosq()] += depth*depth;
+  }
   
+  //     50-move rule:
   if (fiftyMove >= 100) return DRAWSCORE;
   
-  //     ===========================================================================
   //     Checkmate/stalemate detection:
-  //     ===========================================================================
-  
   if (!movesfound)
   {
     if (isOwnKingAttacked())  return (-CHECKMATESCORE+ply-1);
@@ -272,7 +307,10 @@ void Board::displaySearchStats(int mode, int depth, int score)
       if (dt > 0) std::cout << std::setw(5) << (inodes/dt) << " ";
       else          std::cout << "    - ";
       
-      // PV
+      // store this PV:
+      rememberPV();
+      
+      // display the PV
       displayPV();
       break;
       
@@ -282,6 +320,7 @@ void Board::displaySearchStats(int mode, int depth, int score)
       toSan(moveBuffer[score], sanMove);
       std::cout << sanMove;
       makeMove(moveBuffer[score]);
+      //                         printf("...    \n");
       printf("...    \r");
       std::cout.flush();
       break;
@@ -411,4 +450,15 @@ int Board::repetitionCount()
     if (gameLine[i].key == board.hashkey) rep++;
   }
   return rep;
+}
+
+void Board::rememberPV()
+{
+  // remember the last PV
+  int i;
+  lastPVLength = board.triangularLength[0];
+  for (i = 0; i < board.triangularLength[0]; i++)
+  {
+    lastPV[i] = board.triangularArray[0][i];
+  }
 }

@@ -107,6 +107,7 @@ extern const int ROOK_VALUE = 500;
 extern const int QUEEN_VALUE = 900;
 extern const int KING_VALUE = 9999;
 extern const int CHECK_MATE = KING_VALUE;
+int PIECEVALUES[16];
 
 // used in Eugene Nalimov's bitScanReverse
 int MS1BTABLE[256];
@@ -394,5 +395,25 @@ int DRAWSCORE = 0;
 Move NOMOVE;
 HashKeys KEY;
 
+// variables for quiescence and SEE:
+int OFFSET = 128;
+int MINCAPTVAL = 1;
+int WEST = -1;
+int NORTHWEST = +7;
+int NORTH = +8;
+int NORTHEAST = +9;
+int EAST = +1;
+int SOUTHEAST = -7;
+int SOUTH = -8;
+int SOUTHWEST = -9;
+BitMap RAY_W[64];
+BitMap RAY_NW[64];
+BitMap RAY_N[64];
+BitMap RAY_NE[64];
+BitMap RAY_E[64];
+BitMap RAY_SE[64];
+BitMap RAY_S[64];
+BitMap RAY_SW[64];
+int HEADINGS[64][64];
 
 #endif
